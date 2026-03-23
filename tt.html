@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Benefit Calculator - MIP, TBP & GGH</title>
+<style>
+body{
+    font-family: Arial;
+    background:#f2f2f2;
+    text-align:center;
+    padding:30px;
+}
+.box{
+    background:white;
+    padding:20px;
+    border-radius:10px;
+    width:1000px;
+    margin:auto;
+    box-shadow:0 0 10px rgba(0,0,0,0.1);
+}
+input{
+    width:80%;
+    padding:10px;
+    margin:5px 0;
+}
+button{
+    padding:10px 20px;
+    background:#28a745;
+    color:white;
+    border:none;
+    border-radius:5px;
+    cursor:pointer;
+}
+table{
+    width:100%;
+    margin-top:20px;
+    border-collapse: collapse;
+}
+th,td{
+    border:1px solid #ddd;
+    padding:8px;
+    text-align:right;
+}
+th{
+    background:#28a745;
+    color:white;
+}
+td:first-child{
+    text-align:left;
+}
+.totals{
+    font-weight:bold;
+    background:#e0ffe0;
+}
+</style>
+</head>
+<body>
+
+<div class="box">
+<h2>Advanced Benefit Calculator</h2>
+
+<h3>MIP Amount</h3>
+<input type="number" id="mip_amount" placeholder="Enter MIP Amount">
+
+<h3>TBP Amount</h3>
+<input type="number" id="tbp_amount" placeholder="Enter TBP Amount">
+
+<h3>GGH Amount</h3>
+<input type="number" id="ggh_amount" placeholder="Enter GGH Amount">
+
+<br><br>
+<button onclick="calculate()">Calculate</button>
+
+<table>
+<tr>
+<th>Plan</th>
+<th>Monthly</th>
+<th>60 Months</th>
+<th>Principal</th>
+<th>Extra</th>
+<th>Final</th>
+</tr>
+
+<tr>
+<td>MIP (25%)</td>
+<td id="mip_m"></td>
+<td id="mip_scaled"></td>
+<td id="mip_p"></td>
+<td>-</td>
+<td id="mip_final"></td>
+</tr>
+
+<tr>
+<td>TBP (18%)</td>
+<td id="tbp_m"></td>
+<td id="tbp_scaled"></td>
+<td id="tbp_p"></td>
+<td id="tbp_extra"></td>
+<td id="tbp_final"></td>
+</tr>
+
+<tr>
+<td>GGH</td>
+<td>-</td>
+<td>-</td>
+<td id="ggh_p"></td>
+<td>-</td>
+<td id="ggh_final"></td>
+</tr>
+
+<tr class="totals">
+<td>Totals</td>
+<td id="total_m"></td>
+<td id="total_scaled"></td>
+<td id="total_p"></td>
+<td id="total_extra"></td>
+<td id="total_final"></td>
+</tr>
+
+</table>
+</div>
+
+<script>
+function calculate(){
+    // Initialize totals
+    let total_m = 0, total_scaled = 0, total_p = 0, total_extra = 0, total_final = 0;
+
+    // MIP
+    let mip = Number(document.getElementById("mip_amount").value);
+    let mip_m=0, mip_scaled=0, mip_final=0;
+    if(mip >= 500000){
+        mip_m = mip * 25 / 100 / 12;
+        mip_scaled = mip_m * 60;
+        mip_final = mip + mip_scaled;
+
+        document.getElementById("mip_m").innerText = mip_m.toLocaleString();
+        document.getElementById("mip_scaled").innerText = mip_scaled.toLocaleString();
+        document.getElementById("mip_p").innerText = mip.toLocaleString();
+        document.getElementById("mip_final").innerText = mip_final.toLocaleString();
+    } else {
+        document.getElementById("mip_m").innerText = "";
+        document.getElementById("mip_scaled").innerText = "";
+        document.getElementById("mip_p").innerText = "";
+        document.getElementById("mip_final").innerText = "";
+    }
+    total_m += mip_m;
+    total_scaled += mip_scaled;
+    total_p += mip;
+    total_final += mip_final;
+
+    // TBP
+    let tbp = Number(document.getElementById("tbp_amount").value);
+    let tbp_m=0, tbp_scaled=0, tbp_extra=0, tbp_final=0;
+    if(tbp >= 1054680){
+        tbp_m = tbp * 18 / 100 / 12;
+        tbp_scaled = tbp_m * 60;
+        tbp_extra = tbp * 150 / 100;
+        tbp_final = tbp + tbp_extra;
+
+        document.getElementById("tbp_m").innerText = tbp_m.toLocaleString();
+        document.getElementById("tbp_scaled").innerText = tbp_scaled.toLocaleString();
+        document.getElementById("tbp_p").innerText = tbp.toLocaleString();
+        document.getElementById("tbp_extra").innerText = tbp_extra.toLocaleString();
+        document.getElementById("tbp_final").innerText = tbp_final.toLocaleString();
+    } else {
+        document.getElementById("tbp_m").innerText = "";
+        document.getElementById("tbp_scaled").innerText = "";
+        document.getElementById("tbp_p").innerText = "";
+        document.getElementById("tbp_extra").innerText = "";
+        document.getElementById("tbp_final").innerText = "";
+    }
+    total_m += tbp_m;
+    total_scaled += tbp_scaled;
+    total_p += tbp;
+    total_extra += tbp_extra;
+    total_final += tbp_final;
+
+    // GGH
+    let ggh = Number(document.getElementById("ggh_amount").value);
+    let ggh_final = 0;
+    if(ggh >= 893750 && ggh % 893750 === 0){
+        let multiplier = ggh / 893750;
+        ggh_final = 4000000 * multiplier;
+
+        document.getElementById("ggh_p").innerText = ggh.toLocaleString();
+        document.getElementById("ggh_final").innerText = ggh_final.toLocaleString();
+    } else {
+        document.getElementById("ggh_p").innerText = "";
+        document.getElementById("ggh_final").innerText = "";
+    }
+    total_p += ggh;
+    total_final += ggh_final;
+
+    // Update totals row
+    document.getElementById("total_m").innerText = total_m>0 ? total_m.toLocaleString() : '';
+    document.getElementById("total_scaled").innerText = total_scaled>0 ? total_scaled.toLocaleString() : '';
+    document.getElementById("total_p").innerText = total_p>0 ? total_p.toLocaleString() : '';
+    document.getElementById("total_extra").innerText = total_extra>0 ? total_extra.toLocaleString() : '';
+    document.getElementById("total_final").innerText = total_final>0 ? total_final.toLocaleString() : '';
+}
+</script>
+
+</body>
+</html>
